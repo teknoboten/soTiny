@@ -47,21 +47,24 @@ app.post("/urls", (req, res) => {
   // const templateVars = { urls: urlDatabase };
   const shortURL = notCrypto(6);
   urlDatabase[shortURL] = req.body.longURL;
-  console.log(urlDatabase);
-  res.send('ok');
-  // res.render("urls_show");
+  // console.log(urlDatabase);
+  res.redirect(302, `/urls/${shortURL}`);
+
 })
 
-app.get("/urls/:id", (req, res) => {
+app.get("/urls/:shortURL", (req, res) => {
   const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase };
   res.render("urls_show", templateVars);
 });
 
+app.get("/u/:shortURL", (req, res) => {
+  // const templateVars = { shortURL: urlDatabase, longURL: req.params.shortURL };
+  const longURL = urlDatabase[req.params.shortURL];
+  // res.redirect(longURL);
+  // res.send(longURL);
+  res.redirect(302, longURL);
+});
 
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
-});
-
-app.get("/some.html", (req, res) => {
-  res.send("<html><h1>i am yelling this!</h1></html>");
 });

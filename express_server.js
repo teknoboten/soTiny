@@ -21,8 +21,7 @@ notCrypto = (num) => {
     randomString += notSecure[randomNum]
   }
 return randomString;
-}
-
+};
 
 app.listen(PORT, () => {
   console.log(`listening on port ${PORT}...`);
@@ -38,16 +37,12 @@ app.get("/urls", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  // const templateVars = {}
   res.render("urls_new");
 });
 
 app.post("/urls", (req, res) => {
-  //do something to add the URL here
-  // const templateVars = { urls: urlDatabase };
   const shortURL = notCrypto(6);
   urlDatabase[shortURL] = req.body.longURL;
-  // console.log(urlDatabase);
   res.redirect(302, `/urls/${shortURL}`);
 
 })
@@ -57,11 +52,14 @@ app.get("/urls/:shortURL", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
+app.post("/urls/:shortURL/delete", (req, res) => {
+  delete urlDatabase[req.params.shortURL];
+  res.redirect(302, "/urls");
+
+})
+
 app.get("/u/:shortURL", (req, res) => {
-  // const templateVars = { shortURL: urlDatabase, longURL: req.params.shortURL };
   const longURL = urlDatabase[req.params.shortURL];
-  // res.redirect(longURL);
-  // res.send(longURL);
   res.redirect(302, longURL);
 });
 

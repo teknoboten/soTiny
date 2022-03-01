@@ -1,21 +1,28 @@
 const express = require("express");
 const app = express();
 const PORT = 8080; // default port 8080
-const notCrypto = require('./notCrypto');
-
-// const generateRandomString = require('randomstring');
 
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
 
 app.set('view engine', 'ejs');
 
-const urlDatabase = {
+let urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
 
-const generateRandomString = notCrypto();
+notCrypto = (num) => {
+  const notSecure = ["a", "b", "c", "d", "e", "f", 0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+  let randomString = "";
+
+  for (let i = 0; i < num; i++){
+    randomNum = (Math.random() * 10).toFixed(0);
+    randomString += notSecure[randomNum]
+  }
+return randomString;
+}
+
 
 app.listen(PORT, () => {
   console.log(`listening on port ${PORT}...`);
@@ -38,7 +45,9 @@ app.get("/urls/new", (req, res) => {
 app.post("/urls", (req, res) => {
   //do something to add the URL here
   // const templateVars = { urls: urlDatabase };
-  console.log(req.body);
+  const shortURL = notCrypto(6);
+  urlDatabase[shortURL] = req.body.longURL;
+  console.log(urlDatabase);
   res.send('ok');
   // res.render("urls_show");
 })

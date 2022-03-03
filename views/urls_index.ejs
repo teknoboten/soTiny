@@ -16,26 +16,28 @@
   <%- include('partials/_header') %>
 
     <main style="margin: 1em;">
-      <h3>My so tiny URLS</h3>
+      <h3>My (soTiny) URLS</h3>
 
 
 
 
       <table class="table">
-        <thead>
+        <!-- <thead>
           <tr>
             <th scope="col">Short URL</th>
             <th scope="col">Long URL</th>
             <th scope="col">Edit</th>
             <th scope="col">Delete</th>
           </tr>
-        </thead>
+        </thead> -->
 
         <tbody>
           <% for(let url in urls) { %>
             <tr>
               <td>
-                <%= url %>
+                <a href="/urls/<%= url%>">
+                  <%= url %>
+                </a>
               </td>
               <td>
                 <%= urls[url] %>

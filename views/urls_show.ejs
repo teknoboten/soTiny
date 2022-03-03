@@ -14,32 +14,33 @@
     <div class="card text-center">
       <div class="card-header"></div>
       <div class="card-body">
-        <!-- <h5 class="card-title">TinyURL for: <%= longURL[shortURL] %> -->
-        <h5 class="card-title">TinyURL for: <%= longURL %>
+        <h5 class="card-title">
+          <%= longURL %>
         </h5>
         <p class="card-text">Short URL: <a href="/u/<%= shortURL %>">
             <%= shortURL %>
           </a></p>
 
 
-        <h2> Edit </h2>
+        <!-- <h2> Edit </h2> -->
 
         <!-- <div class="align-items-center"> -->
 
 
         <form class="form-inline" action="/urls/<%= shortURL%>/edit" method="POST">
-          <div class="form-group mb-2 align-items-center">
-            <input type="text" class="form-control" name="longURL" placeholder="http://yournewurl.here">
+          <div class="form-group mb-2 mx-auto">
 
-            <button type="submit" class="btn btn-primary btn mb-2">Edit URL</button>
+            <input type="text" class="form-control" name="longURL" placeholder="change this tiny URL">
+
+            <button type="submit" class="btn btn-primary btn mx-sm-2">still tiny!</button>
             <!-- </div> -->
           </div>
         </form>
 
 
       </div>
-      <!-- <div class="card-footer">
-      </div> -->
+      <div class="card-footer">
+      </div>
     </div>
 
 
@@ -59,22 +60,3 @@
 </body>
 
 </html>
-
-
-
-<!-- <form action="/urls/<%= shortURL%>/edit" method="POST">
-
-
-            <div class="form-group">
-
-              <label for="longURL">Edit this URL:</label>
-              <input type="text" class="form-control" name="longURL" placeholder="http://yournewurl.here">
-
-            </div>
-
-        </div>
-        <button type="submit" class="btn btn-secondary btn-sm mb-2">Edit URL</button>
-
-
-              </div>
-              </form> -->

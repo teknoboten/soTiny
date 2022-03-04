@@ -1,15 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
+<%- include('partials/_header') %>
 
-<head>
-  <!-- Bootstrap CSS -->
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
-    integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
-  <title>it's so tiny!</title>
-</head>
-
-<body>
-  <%- include('partials/_header') %>
+  <body>
 
     <div class="card text-center">
       <div class="card-header"></div>
@@ -21,22 +12,15 @@
             <%= shortURL %>
           </a></p>
 
-
-        <!-- <h2> Edit </h2> -->
-
-        <!-- <div class="align-items-center"> -->
-
-
         <form class="form-inline" action="/urls/<%= shortURL%>/edit" method="POST">
           <div class="form-group mb-2 mx-auto">
 
             <input type="text" class="form-control" name="longURL" placeholder="change this tiny URL">
 
             <button type="submit" class="btn btn-primary btn mx-sm-2">still tiny!</button>
-            <!-- </div> -->
+
           </div>
         </form>
-
 
       </div>
       <div class="card-footer">
@@ -57,6 +41,6 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
       integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
       crossorigin="anonymous"></script>
-</body>
+  </body>
 
-</html>
+  </html>

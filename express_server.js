@@ -42,8 +42,19 @@ app.post("/logout", (req, res) => {
   .redirect(302, "/urls");
 })
 
+app.get("/register", (req, res) => {
+  const templateVars = { username: req.cookies['username']};
+  res.render("register", templateVars);
+})
+
+app.post("/register", (req, res) => {
+  console.log(req.params);
+  console.log(req.body);
+  res.redirect(302, "/urls");
+})
+
 app.get("/", (req, res) => {
-  res.send('hey.');
+  res.redirect("/urls");
 });
 
 app.get("/urls", (req, res) => {

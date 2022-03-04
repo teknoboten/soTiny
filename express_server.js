@@ -2,6 +2,10 @@ const express = require("express");
 const app = express();
 const PORT = 8080; // default port 8080
 
+app.listen(PORT, () => {
+  console.log(`listening on port ${PORT}...`);
+});
+
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
 
@@ -15,51 +19,93 @@ let urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
-notCrypto = (num) => {
+const notCrypto = (num) => {
   const notSecure = ["a", "b", "c", "d", "e", "f", 0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
   let randomString = "";
 
-  for (let i = 0; i < num; i++){
-    randomNum = (Math.random() * 10).toFixed(0);
-    randomString += notSecure[randomNum]
+  for (let i = 0; i < num; i++) {
+    const randomNum = (Math.random() * 10).toFixed(0);
+    randomString += notSecure[randomNum];
   }
-return randomString;
+  return randomString;
 };
 
-app.listen(PORT, () => {
-  console.log(`listening on port ${PORT}...`);
+const users = {
+  edc0abe0: {
+    id: 'edc0abe0',
+    email: 'Moira@jazzagals.com',
+    password: 'afsdfsdf'
+  },
+  fe0af0c0: {
+    id: 'fe0af0c0',
+    email: 'alexis@alittlebit.ca',
+    password: 'fgsfgdf'
+  },
+  '0323dfb2': {
+    id: '0323dfb2',
+    email: 'david@roseapothacary.com',
+    password: 'dfss'
+  }
+};
+
+
+const emailAlreadyExists = (email, users) => {
+  for (const user in users) {
+    if (email === users[user].email) {
+      return true;
+    }
+  }
+  return false;
+};
+
+
+app.post("/register", (req, res) => {
+
+  const { email, password } = req.body; //destructure email password
+
+  if (password === "" | email === "") {   //check for blank inputs
+    res.status(400)
+      .send("email or password cannot be blank!");
+
+  } else if (emailAlreadyExists(email, users)) {  //check if email already exists
+    res.status(400)
+      .send("email is already in use");
+
+  } else {  //create new user and save to users object
+
+    const newUser = { id: notCrypto(8), email, password };
+    users[newUser.id] = newUser;
+    res.cookie("user_id", newUser.id)
+      .redirect(302, "/urls");
+  }
+  
+});
+
+
+
+app.get("/register", (req, res) => {
+  const templateVars = { user: users[req.cookies['user_id']]};
+  res.render("register", templateVars);
 });
 
 
 app.post("/login", (req, res) => {
-  res.cookie("username", req.body.username)
-  .redirect(302, "/urls");
+  res.cookie("user_id", req.body.username)
+    .redirect(302, "/urls");
 });
 
 app.post("/logout", (req, res) => {
-  res.clearCookie("username")
-  // res.cookie("username", req.body.username)
-  .redirect(302, "/urls");
-})
-
-app.get("/register", (req, res) => {
-  const templateVars = { username: req.cookies['username']};
-  res.render("register", templateVars);
-})
-
-app.post("/register", (req, res) => {
-  console.log(req.params);
-  console.log(req.body);
-  res.redirect(302, "/urls");
-})
+  res.clearCookie("user_id")
+    .redirect(302, "/urls");
+});
 
 app.get("/", (req, res) => {
   res.redirect("/urls");
 });
 
 app.get("/urls", (req, res) => {
-  const templateVars = { 
-    username: req.cookies['username'],
+  const templateVars = {
+    user: users[req.cookies['user_id']],
     urls: urlDatabase,
     shortURL: urlDatabase
   };
@@ -67,7 +113,7 @@ app.get("/urls", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  const templateVars = { username: req.cookies['username']};
+  const templateVars = { user: users[req.cookies['user_id']] };
   res.render("urls_new", templateVars);
 });
 
@@ -78,10 +124,10 @@ app.post("/urls", (req, res) => {
 });
 
 app.get("/urls/:shortURL", (req, res) => {
-  const templateVars = { 
-    shortURL: req.params.shortURL, 
-    longURL: urlDatabase[req.params.shortURL], 
-    username: req.cookies['username']
+  const templateVars = {
+    shortURL: req.params.shortURL,
+    longURL: urlDatabase[req.params.shortURL],
+    user: users[req.cookies['user_id']]
   };
   res.render("urls_show", templateVars);
 });

@@ -19,17 +19,18 @@
       <ul class="navbar-nav mr-auto">
         <a class="nav-item nav-link" href="/urls">My URLS</a>
         <a class="nav-item nav-link" href="/urls/new">New</a>
+        <a class="nav-item nav-link" href="/register">Register</a>
       </ul>
     </div>
 
     <div class="navbar-nav">
       <ul class="navbar-nav ml-auto">
 
-        <% if(username){ %>
+        <% if(user){ %>
 
           <li class="nav-item">
             <a class="nav-link" href="#"> Logged in as: <b>
-                <%= username %>
+                <%= user.email %>
               </b></a>
           </li>
 

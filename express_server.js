@@ -58,6 +58,18 @@ const emailAlreadyExists = (email, users) => {
   return false;
 };
 
+app.get("/login", (req, res) => {
+  const templateVars = { user: users[req.cookies['user_id']]};
+  res.render("login", templateVars);
+});
+
+// app.post("/login", (req, res) => {
+//   //set cookie
+  
+//   // const templateVars = { user: users[req.cookies['user_id']]};
+//   res.redirect(302, "/urls")
+// })
+
 
 app.post("/register", (req, res) => {
 
@@ -81,16 +93,13 @@ app.post("/register", (req, res) => {
   
 });
 
-
-
 app.get("/register", (req, res) => {
   const templateVars = { user: users[req.cookies['user_id']]};
   res.render("register", templateVars);
 });
 
-
 app.post("/login", (req, res) => {
-  res.cookie("user_id", req.body.username)
+  res.cookie("user_id", req.body.email)
     .redirect(302, "/urls");
 });
 
@@ -105,10 +114,13 @@ app.get("/", (req, res) => {
 
 app.get("/urls", (req, res) => {
   const templateVars = {
-    user: users[req.cookies['user_id']],
+    user: req.cookies['user_id'],
     urls: urlDatabase,
     shortURL: urlDatabase
   };
+
+  console.log(templateVars);
+
   res.render("urls_index", templateVars);
 });
 

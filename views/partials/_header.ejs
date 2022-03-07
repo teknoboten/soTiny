@@ -19,64 +19,33 @@
       <ul class="navbar-nav mr-auto">
         <a class="nav-item nav-link" href="/urls">My URLS</a>
         <a class="nav-item nav-link" href="/urls/new">New</a>
-        <!-- <a class="nav-item nav-link" href="/register">Register</a> -->
+        <a class="nav-item nav-link" href="/register">Register</a>
       </ul>
     </div>
 
     <div class="navbar-nav">
-      <!-- <ul class="navbar-nav ml-auto"> -->
+      <ul class="navbar-nav ml-auto">
 
-      <% if(user){ %>
+        <% if(user){ %>
 
-        <!-- //show logout button -->
-
-        <!-- <li class="nav-item">
+          <li class="nav-item">
             <a class="nav-link" href="#"> Logged in as: <b>
                 <%= user.email %>
               </b></a>
           </li>
 
-      </ul> -->
+      </ul>
 
-        <a href="/login"> <button type="button" class="btn btn-outline-dark">Logout</button></a>
+      <a href="/login"> <button type="button" class="btn btn-outline-dark">Logout</button></a>
 
-        <% } else { %>
+      <% } else { %>
 
-          <a href="/login"> <button type="button" class="btn btn-outline-dark">Login</button></a>
+        <a href="/login"> <button type="button" class="btn btn-outline-dark">Login</button></a>
 
-          <% } %>
+        <% } %>
 
     </div>
     </div>
     </div>
   </nav>
 </header>
-
-<!-- 
-<div class="navbar-nav">
-  <ul class="navbar-nav ml-auto">
-
-    <% if(user){ %>
-
-      <li class="nav-item">
-        <a class="nav-link" href="#"> Logged in as: <b>
-            <%= user.email %>
-          </b></a>
-      </li>
-
-  </ul>
-
-  <form class="form-inline" action="/logout" method="POST">
-    <button type="submit" class="btn btn-outline-dark">Logout</button>
-  </form>
-
-  <% } else { %>
-
-    <form class="form-inline" action="/login" method="POST">
-      <input type="text" class="form-control mx-sm-2" name="username" placeholder="Username">
-      <button type="submit" class="btn btn-outline-dark">Login</button>
-    </form>
-
-    <% } %>
-
-</div> -->

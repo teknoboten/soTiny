@@ -10,6 +10,7 @@ const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
 
 const cookieParser = require('cookie-parser');
+// const e = require("express");
 app.use(cookieParser());
 
 app.set('view engine', 'ejs');
@@ -39,7 +40,7 @@ const users = {
   fe0af0c0: {
     id: 'fe0af0c0',
     email: 'alexis@alittlebit.ca',
-    password: 'fgsfgdf'
+    password: 'ewdavid'
   },
   '0323dfb2': {
     id: '0323dfb2',
@@ -48,11 +49,10 @@ const users = {
   }
 };
 
-
-const emailAlreadyExists = (email, users) => {
+const getUser = (email, users) => {
   for (const user in users) {
     if (email === users[user].email) {
-      return true;
+      return users[user]
     }
   }
   return false;
@@ -63,13 +63,32 @@ app.get("/login", (req, res) => {
   res.render("login", templateVars);
 });
 
-// app.post("/login", (req, res) => {
-//   //set cookie
-  
-//   // const templateVars = { user: users[req.cookies['user_id']]};
-//   res.redirect(302, "/urls")
-// })
+app.post("/login", (req, res) => {
 
+  const { email, password } = req.body; //destructure email password
+  const user = getUser(email, users);
+  
+    if (!user){ //if false, return 403 
+      res.status(403)
+        .send("user not found");
+    } 
+
+    if (user.password !== password){
+      res.status(403)
+      .send("incorect password");
+    } 
+
+    else {
+      res.cookie("user_id", user.id)
+      .redirect(302, "/urls");
+    }
+});
+
+
+app.get("/register", (req, res) => {
+  const templateVars = { user: users[req.cookies['user_id']]};
+  res.render("register", templateVars);
+});
 
 app.post("/register", (req, res) => {
 
@@ -79,28 +98,18 @@ app.post("/register", (req, res) => {
     res.status(400)
       .send("email or password cannot be blank!");
 
-  } else if (emailAlreadyExists(email, users)) {  //check if email already exists
-    res.status(400)
-      .send("email is already in use");
+} else if (getUser(email, users)) {  //if checkEmail returns true, email is already in use
+  res.status(400)
+    .send("email is already in use");
 
   } else {  //create new user and save to users object
 
     const newUser = { id: notCrypto(8), email, password };
     users[newUser.id] = newUser;
-    res.cookie("user_id", newUser.id)
+    res.cookie("user_id", newUser.email)
       .redirect(302, "/urls");
   }
   
-});
-
-app.get("/register", (req, res) => {
-  const templateVars = { user: users[req.cookies['user_id']]};
-  res.render("register", templateVars);
-});
-
-app.post("/login", (req, res) => {
-  res.cookie("user_id", req.body.email)
-    .redirect(302, "/urls");
 });
 
 app.post("/logout", (req, res) => {
@@ -113,13 +122,12 @@ app.get("/", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
+
   const templateVars = {
-    user: req.cookies['user_id'],
-    urls: urlDatabase,
+    user: users[req.cookies['user_id']],
+    urls: urlDatabase,  //refactor this
     shortURL: urlDatabase
   };
-
-  console.log(templateVars);
 
   res.render("urls_index", templateVars);
 });

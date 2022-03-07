@@ -19,7 +19,7 @@
       <ul class="navbar-nav mr-auto">
         <a class="nav-item nav-link" href="/urls">My URLS</a>
         <a class="nav-item nav-link" href="/urls/new">New</a>
-        <a class="nav-item nav-link" href="/register">Register</a>
+
       </ul>
     </div>
 
@@ -33,14 +33,16 @@
                 <%= user.email %>
               </b></a>
           </li>
-
       </ul>
 
-      <a href="/login"> <button type="button" class="btn btn-outline-dark">Logout</button></a>
+      <form class="form-inline" action="/logout" method="POST">
+        <button type="submit" class="btn btn-outline-dark">Logout</button>
+      </form>
 
       <% } else { %>
 
-        <a href="/login"> <button type="button" class="btn btn-outline-dark">Login</button></a>
+        <a class="nav-item nav-link" href="/login">Login</a>
+        <a class="nav-item nav-link" href="/register">Register</a>
 
         <% } %>
 

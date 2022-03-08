@@ -14,16 +14,29 @@ app.use(cookieParser());
 
 app.set('view engine', 'ejs');
 
-let urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+// const urlDatabase = {
+//   "b2xVn2": "http://www.lighthouselabs.ca",
+//   "9sm5xK": "http://www.google.com"
+// };
+
+
+const urlDatabase = {
+  "b2xVn2": { 
+    longURL: "http://www.lighthouselabs.ca",
+    userID: "fe0af0c0"
+  },
+  "9sm5xK": {
+    longURL: "http://www.google.com",
+    userID: "fe0af0c0"
+  }
 };
+
 
 const notCrypto = (num) => {
 //takes in a number (num) and returns a random-ish string of num length
 
   const notSecure = ["a", "b", "c", "d", "e", "f", 0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
-  let randomString = "";
+  let randomString = "t";
 
   for (let i = 0; i < num; i++) {
     const randomNum = (Math.random() * 10).toFixed(0);
@@ -65,7 +78,6 @@ const getUser = (email, users) => {
   return false;
 };
 
-
 app.get("/login", (req, res) => {
 
   if (req.cookies.user_id){ //if user is logged in, redirect
@@ -75,7 +87,6 @@ app.get("/login", (req, res) => {
     res.render("login", templateVars);
   }
 });
-
 
 app.post("/login", (req, res) => {
 //endpoint to handle login requests
@@ -97,7 +108,6 @@ app.post("/login", (req, res) => {
   }
 });
 
-
 app.get("/register", (req, res) => {
 
   if (req.cookies.user_id){ //if user is logged in, redirect
@@ -107,7 +117,6 @@ app.get("/register", (req, res) => {
     res.render("register", templateVars);
   }
 });
-
 
 app.post("/register", (req, res) => {
 //endpoint to handle new registrations
@@ -150,7 +159,6 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
-
 app.get("/urls/new", (req, res) => {
 
   if (!req.cookies.user_id){
@@ -162,7 +170,6 @@ app.get("/urls/new", (req, res) => {
 
 });
 
-
 app.post("/urls", (req, res) => {
 //endpoint to handle new so tiny urls
 
@@ -170,8 +177,13 @@ app.post("/urls", (req, res) => {
   if (!req.cookies.user_id){
     res.status(403).send("please log in to continue");
   } else {
-    const shortURL = notCrypto(6);    //generate random unique string
-    urlDatabase[shortURL] = req.body.longURL; //create database object with shortURL as the key and longURL as value
+
+    const shortURL = notCrypto(6);        //generate random unique string
+    const userID = req.cookies.user_id;   
+    const longURL = req.body.longURL;
+
+    urlDatabase[shortURL] = { longURL, userID }; 
+
     res.redirect(302, `/urls/${shortURL}`); //redirect to show page for new url
   }
 });
@@ -181,14 +193,16 @@ app.get("/urls/:shortURL", (req, res) => {
 
   const templateVars = {
     shortURL: req.params.shortURL,
-    longURL: urlDatabase[req.params.shortURL],
+    longURL: urlDatabase[req.params.shortURL].longURL,
     user: users[req.cookies['user_id']]
   };
+
   res.render("urls_show", templateVars);
 });
 
 app.post("/urls/:shortURL/edit", (req, res) => {
-  urlDatabase[`${req.params.shortURL}`] = req.body.longURL;
+
+  urlDatabase[req.params.shortURL].longURL = req.body.longURL  
   res.redirect(302,`/urls`);
 });
 
@@ -201,7 +215,7 @@ app.get("/u/:shortURL", (req, res) => {
 //endpoint that makes urls so tiny!
 // aka redirects each request to the unique shortURL to it's associated longURL
 
-  const longURL = urlDatabase[req.params.shortURL];
+  const longURL = urlDatabase[req.params.shortURL].longURL;
   res.redirect(302, longURL);
 });
 

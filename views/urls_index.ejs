@@ -8,26 +8,26 @@
       <table class="table">
 
         <tbody>
-          <% for(let url in urls) { %>
+          <% for (const shortURL in urls) { %>
             <tr>
               <td>
-                <a href="/urls/<%= url%>">
-                  <%= url %>
+                <a href="/u/<%= shortURL%>">
+                  <%= shortURL %>
                 </a>
               </td>
               <td>
-                <%= urls[url] %>
+                <%= urls[shortURL].longURL %>
               </td>
 
               <td>
                 <div class="form-group mb-2">
-                  <a href="/urls/<%= url%>">
+                  <a href="/urls/<%= shortURL%>">
                     <button type="button" class="btn btn-outline-info">Edit</button></a>
                 </div>
               </td>
 
               <td>
-                <form class="form-inline" action="/urls/<%= url%>/delete" method="POST">
+                <form class="form-inline" action="/urls/<%= shortURL%>/delete" method="POST">
                   <div class="form-group mb-2">
                     <button type="submit" class="btn btn-outline-danger">Delete</button>
                   </div>

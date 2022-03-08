@@ -67,8 +67,13 @@ const getUser = (email, users) => {
 
 
 app.get("/login", (req, res) => {
-  const templateVars = { user: users[req.cookies['user_id']]};
-  res.render("login", templateVars);
+
+  if (req.cookies.user_id){ //if user is logged in, redirect
+    res.redirect(302, "/urls");
+  } else {
+    const templateVars = { user: users[req.cookies['user_id']]};
+    res.render("login", templateVars);
+  }
 });
 
 
@@ -94,8 +99,13 @@ app.post("/login", (req, res) => {
 
 
 app.get("/register", (req, res) => {
-  const templateVars = { user: users[req.cookies['user_id']]};
-  res.render("register", templateVars);
+
+  if (req.cookies.user_id){ //if user is logged in, redirect
+    res.redirect(302, "/urls");
+  } else {
+    const templateVars = { user: users[req.cookies['user_id']]};
+    res.render("register", templateVars);
+  }
 });
 
 
@@ -142,17 +152,28 @@ app.get("/urls", (req, res) => {
 
 
 app.get("/urls/new", (req, res) => {
-  const templateVars = { user: users[req.cookies['user_id']] };
-  res.render("urls_new", templateVars);
+
+  if (!req.cookies.user_id){
+    res.redirect(302, "/login");
+  } else {
+    const templateVars = { user: users[req.cookies['user_id']] };
+    res.render("urls_new", templateVars);
+  }
+
 });
 
 
 app.post("/urls", (req, res) => {
 //endpoint to handle new so tiny urls
 
-  const shortURL = notCrypto(6);    //generate random unique string
-  urlDatabase[shortURL] = req.body.longURL; //create database object with shortURL as the key and longURL as value
-  res.redirect(302, `/urls/${shortURL}`); //redirect to show page for new url
+//if user is not logged in, send an error message
+  if (!req.cookies.user_id){
+    res.status(403).send("please log in to continue");
+  } else {
+    const shortURL = notCrypto(6);    //generate random unique string
+    urlDatabase[shortURL] = req.body.longURL; //create database object with shortURL as the key and longURL as value
+    res.redirect(302, `/urls/${shortURL}`); //redirect to show page for new url
+  }
 });
 
 app.get("/urls/:shortURL", (req, res) => {

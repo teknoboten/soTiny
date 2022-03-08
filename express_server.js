@@ -81,12 +81,12 @@ const getUser = (email, users) => {
 app.get("/login", (req, res) => {
 
   if (req.cookies.user_id){ //if user is logged in, redirect
-    res.redirect(302, "/urls");
-  } else {
-    const templateVars = { user: users[req.cookies['user_id']]};
-    res.render("login", templateVars);
-  }
+    return res.redirect(302, "/urls");
+  };
+  const templateVars = { user: users[req.cookies['user_id']]};
+  res.render("login", templateVars);
 });
+
 
 app.post("/login", (req, res) => {
 //endpoint to handle login requests
@@ -95,27 +95,25 @@ app.post("/login", (req, res) => {
   const user = getUser(email, users);   //returns false if email not found
   
   if (!user) {
-    res.status(403)
+    return res.status(403)
       .send("user not found");
   }
 
   if (user.password !== password) {
-    res.status(403)
-      .send("incorect password");
-  } else {
-    res.cookie("user_id", user.id)
-      .redirect(302, "/urls");
-  }
+    return res.status(403).send("incorect password");
+  } 
+  
+  res.cookie("user_id", user.id)
+    .redirect(302, "/urls");
 });
 
 app.get("/register", (req, res) => {
 
   if (req.cookies.user_id){ //if user is logged in, redirect
-    res.redirect(302, "/urls");
-  } else {
-    const templateVars = { user: users[req.cookies['user_id']]};
-    res.render("register", templateVars);
-  }
+    return res.redirect(302, "/urls");
+  } 
+  const templateVars = { user: users[req.cookies['user_id']]};
+  res.render("register", templateVars);
 });
 
 app.post("/register", (req, res) => {
@@ -124,22 +122,19 @@ app.post("/register", (req, res) => {
   const { email, password } = req.body;
 
   if (password === "" | email === "") {
-    res.status(400)
-      .send("email or password cannot be blank!");
+    return res.status(400).send("email or password cannot be blank!");
+  };
+  
+  if (getUser(email, users)) {
+    return res.status(400).send("email is already in use");
+  };
 
-  } else if (getUser(email, users)) {
-    res.status(400)
-      .send("email is already in use");
-
-  } else {
   //create new user object using variables destructured from req.body (form data)
   
-    const newUser = { id: notCrypto(8), email, password };  //generate and set unique id for newUser
-    users[newUser.id] = newUser;      //save newUser object in users database
-    res.cookie("user_id", newUser.id) //set a cookie using user_id value
-      .redirect(302, "/urls");        //redirect to /urls
-  }
-  
+  const newUser = { id: notCrypto(8), email, password };  //generate and set unique id for newUser
+  users[newUser.id] = newUser;      //save newUser object in users database
+  res.cookie("user_id", newUser.id) //set a cookie using user_id value
+    .redirect(302, "/urls");        //redirect to /urls
 });
 
 app.post("/logout", (req, res) => {
@@ -175,17 +170,17 @@ app.post("/urls", (req, res) => {
 
 //if user is not logged in, send an error message
   if (!req.cookies.user_id){
-    res.status(403).send("please log in to continue");
-  } else {
-
-    const shortURL = notCrypto(6);        //generate random unique string
-    const userID = req.cookies.user_id;   
-    const longURL = req.body.longURL;
-
-    urlDatabase[shortURL] = { longURL, userID }; 
-
-    res.redirect(302, `/urls/${shortURL}`); //redirect to show page for new url
+    return res.status(403).send("please log in to continue");
   }
+  
+//create a new entry in urldatabase
+
+  const shortURL = notCrypto(6);       
+  const userID = req.cookies.user_id;   
+  const longURL = req.body.longURL;
+  urlDatabase[shortURL] = { longURL, userID }; 
+
+  res.redirect(302, `/urls/${shortURL}`); //redirect to show page for new url
 });
 
 app.get("/urls/:shortURL", (req, res) => {
@@ -213,7 +208,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 
 app.get("/u/:shortURL", (req, res) => {
 //endpoint that makes urls so tiny!
-// aka redirects each request to the unique shortURL to it's associated longURL
+// aka redirects each request to a unique shortURL to it's associated longURL
 
   const longURL = urlDatabase[req.params.shortURL].longURL;
   res.redirect(302, longURL);

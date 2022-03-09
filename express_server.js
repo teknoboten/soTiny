@@ -14,24 +14,25 @@ app.use(cookieParser());
 
 app.set('view engine', 'ejs');
 
+const bcrypt = require('bcryptjs');
 
 const urlDatabase = {
-  "b2xVn2": {
-    longURL: "http://www.lighthouselabs.ca",
-    userID: "fe0af0c0"
-  },
-  "9sm5xK": {
-    longURL: "http://www.google.com",
-    userID: "fe0af0c0"
-  },
-  "v9xVb4": {
-    longURL: "http://bikerave.ca",
-    userID: "0323dfb2"
-  },
-  "Ssm6xK": {
-    longURL: "http://www.tweeter.com",
-    userID: "edc0abe0"
-  }
+  // "b2xVn2": {
+  //   longURL: "http://www.lighthouselabs.ca",
+  //   userID: "fe0af0c0"
+  // },
+  // "9sm5xK": {
+  //   longURL: "http://www.google.com",
+  //   userID: "fe0af0c0"
+  // },
+  // "v9xVb4": {
+  //   longURL: "http://bikerave.ca",
+  //   userID: "0323dfb2"
+  // },
+  // "Ssm6xK": {
+  //   longURL: "http://www.tweeter.com",
+  //   userID: "edc0abe0"
+  // }
 };
 
 const notCrypto = (num) => {
@@ -50,21 +51,21 @@ const notCrypto = (num) => {
 const users = {
 //user database
 
-  edc0abe0: {
-    id: 'edc0abe0',
-    email: 'Moira@jazzagals.com',
-    password: 'ohdannyboy'
-  },
-  fe0af0c0: {
-    id: 'fe0af0c0',
-    email: 'alexis@alittlebit.ca',
-    password: 'ewdavid'
-  },
-  '0323dfb2': {
-    id: '0323dfb2',
-    email: 'david@roseapothacary.com',
-    password: 'warmestregards'
-  }
+  // edc0abe0: {
+  //   id: 'edc0abe0',
+  //   email: 'Moira@jazzagals.com',
+  //   password: 'ohdannyboy'
+  // },
+  // fe0af0c0: {
+  //   id: 'fe0af0c0',
+  //   email: 'alexis@alittlebit.ca',
+  //   password: 'ewdavid'
+  // },
+  // '0323dfb2': {
+  //   id: '0323dfb2',
+  //   email: 'david@roseapothacary.com',
+  //   password: 'warmestregards'
+  // }
 };
 
 const getUser = (email, users) => {
@@ -108,16 +109,14 @@ app.post("/login", (req, res) => {
   const user = getUser(email, users);   //returns false if email not found
   
   if (!user) {
-    return res.status(403)
-      .send("user not found");
+    return res.status(403).send("user not found");
   }
 
-  if (user.password !== password) {
+  if (!bcrypt.compareSync(password, user.password)){
     return res.status(403).send("incorect password");
   }
   
-  res.cookie("user_id", user.id)
-    .redirect(302, "/urls");
+  res.cookie("user_id", user.id).redirect(302, "/urls");
 });
 
 app.get("/register", (req, res) => {
@@ -132,7 +131,7 @@ app.get("/register", (req, res) => {
 app.post("/register", (req, res) => {
 //endpoint to handle new registrations
 
-  const { email, password } = req.body;
+  let { email, password } = req.body;
 
   if (password === "" | email === "") {
     return res.status(400).send("email or password cannot be blank!");
@@ -142,15 +141,16 @@ app.post("/register", (req, res) => {
     return res.status(400).send("email is already in use");
   }
 
-  //create new user object using variables destructured from req.body (form data)
-  
-  const newUser = { id: notCrypto(8), email, password };  //generate and set unique id for newUser
-  users[newUser.id] = newUser;      //save newUser object in users database
-  res.cookie("user_id", newUser.id) //set a cookie using user_id value
-    .redirect(302, "/urls");        //redirect to /urls
+  //create new user object and save
+  password = bcrypt.hashSync(password, 10); //hash password
+  const newUser = { id: notCrypto(8), email, password };  
+  users[newUser.id] = newUser;   
+  res.cookie("user_id", newUser.id)
+    .redirect(302, "/urls");       
 });
 
 app.post("/logout", (req, res) => {
+
   res.clearCookie("user_id")  //clear cookie
     .redirect(302, "/urls");
 });
@@ -215,13 +215,12 @@ app.get("/urls/:shortURL", (req, res) => {
 app.post("/urls/:shortURL/edit", (req, res) => {
 //endpoint to handle edit requests
 
-
   if (!req.cookies['user_id']) {
     return res.send("you must be logged in to do that");
   }
 
   //check if user_id cookie matches the shortURL userID
-  if (urlDatabase[req.params.shortURL]['userID'] !== users[req.cookies['user_id']]) {
+  if (urlDatabase[req.params.shortURL]['userID'] !== users[req.cookies['user_id']].id) {
     return res.send("you do not have permission to do that");
   }
 
@@ -243,7 +242,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   }
 
   //check if user_id cookie matches the given shortURL userID
-  if (urlDatabase[req.params.shortURL]['userID'] !== users[req.cookies['user_id']]) {
+  if (urlDatabase[req.params.shortURL]['userID'] !== users[req.cookies['user_id']].id) {
     return res.send("you do not have permission to do that");
   }
 

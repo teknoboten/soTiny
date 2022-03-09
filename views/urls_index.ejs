@@ -3,40 +3,54 @@
   <body>
 
     <main style="margin: 1em;">
-      <h3>My (so tiny) URLS</h3>
 
-      <table class="table">
+      <% if(user) {%>
 
-        <tbody>
-          <% for (const shortURL in urls) { %>
-            <tr>
-              <td>
-                <a href="/u/<%= shortURL%>">
-                  <%= shortURL %>
-                </a>
-              </td>
-              <td>
-                <%= urls[shortURL].longURL %>
-              </td>
+        <h3>My (so tiny) URLS</h3>
 
-              <td>
-                <div class="form-group mb-2">
-                  <a href="/urls/<%= shortURL%>">
-                    <button type="button" class="btn btn-outline-info">Edit</button></a>
-                </div>
-              </td>
+        <table class="table">
 
-              <td>
-                <form class="form-inline" action="/urls/<%= shortURL%>/delete" method="POST">
+          <tbody>
+            <% for (const shortURL in urls) { %>
+              <tr>
+                <td>
+                  <a href="/u/<%= shortURL%>">
+                    <%= shortURL %>
+                  </a>
+                </td>
+                <td>
+                  <%= urls[shortURL].longURL %>
+                </td>
+
+                <td>
                   <div class="form-group mb-2">
-                    <button type="submit" class="btn btn-outline-danger">Delete</button>
+                    <a href="/urls/<%= shortURL%>">
+                      <button type="button" class="btn btn-outline-info">Edit</button></a>
                   </div>
-                </form>
-              </td>
-            </tr>
-            <% } %>
-        </tbody>
-      </table>
+                </td>
+
+                <td>
+                  <form class="form-inline" action="/urls/<%= shortURL%>/delete" method="POST">
+                    <div class="form-group mb-2">
+                      <button type="submit" class="btn btn-outline-danger">Delete</button>
+                    </div>
+                  </form>
+                </td>
+              </tr>
+              <% } %>
+          </tbody>
+        </table>
+        <% } else { %>
+
+          <div class="px-auto" style="width: 18rem;">
+
+            <p class="text"> Please <a href="/login">log in</a> or <a href="/register">register</a> to
+              continue. </p>
+
+          </div>
+
+
+          <% } %>
     </main>
 
 

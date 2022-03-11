@@ -2,7 +2,7 @@
 
   <body>
 
-    <main style="margin: 1em;">
+    <!-- <main style="margin: 1em;">
       <h3>Add New URL</h3>
       <form class="form-inline" action="/urls" method="POST">
         <div class="form-group mb-2">
@@ -12,7 +12,54 @@
           <button type="submit" class="btn btn-primary">But make it tiny!</button>
         </div>
       </form>
-    </main>
+    </main> -->
+
+
+    <div class="card mx-auto mt-2" style="width: 35rem;">
+
+      <div class="card-header"></div>
+      <div class="card-body">
+
+        <h4 class="card-title mb-4">
+          Add New URL
+        </h4>
+
+        <p class="card-text mb-5">Add a URL below to generate a new, sharable URL that is <b>so tiny.</b>
+        </p>
+
+        <form action="/urls" method="POST">
+
+          <div class="form-row">
+
+            <div class="col-sm-8">
+              <input type="text" class="form-control" id="longURL" name="longURL" placeholder="New URL">
+            </div>
+
+            <div class="col">
+              <button type="submit" class="btn btn-success btn mx-sm-2">Make it so tiny!</button>
+            </div>
+
+          </div>
+
+        </form>
+
+      </div>
+      <div class="card-footer">
+      </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     <!-- Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
@@ -27,3 +74,17 @@
   </body>
 
   </html>
+
+
+  <!-- 
+  <main style="margin: 1em;">
+    <h3>Add New URL</h3>
+    <form class="form-inline" action="/urls" method="POST">
+      <div class="form-group mb-2">
+        <label for="longURL">URL: </label>
+        <input class="form-control" type="text" name="longURL" placeholder="http://"
+          style="width: 300px; margin: 1em">
+        <button type="submit" class="btn btn-primary">But make it tiny!</button>
+      </div>
+    </form>
+  </main> -->

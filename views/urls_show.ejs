@@ -2,35 +2,44 @@
 
   <body>
 
-    <div class="card text-center">
+    <div class="card mx-auto mt-2" style="width: 35rem;">
+
       <div class="card-header"></div>
+
       <div class="card-body">
-        <h5 class="card-title">
 
+        <h4 class="card-title mb-5">
           <%= longURL %>
-        </h5>
-        <p class="card-text">Short URL: <a href="/u/<%= shortURL %>">
-            <%= shortURL %>
-          </a></p>
+        </h4>
 
-        <form class="form-inline" action="/urls/<%= shortURL%>/edit" method="POST">
-          <div class="form-group mb-2 mx-auto">
+        <h5 class="card-subtitle mb-3">
+          <a class="text-success" href="/u/<%= shortURL %>">SoTiny URL
+        </h5></a>
 
-            <input type="text" class="form-control" name="longURL" placeholder="change this tiny URL">
+        <p class="card-text mb-5">Copy this link to share this soTiny URL. If you would
+          like to update it, you can do so below.
+        </p>
 
-            <button type="submit" class="btn btn-primary btn mx-sm-2">still tiny!</button>
+        <form action="/urls/<%= shortURL%>/edit" method="POST">
+
+          <div class="form-row">
+
+            <div class="col-sm-9">
+              <input type="text" class="form-control" id="longURL" name="longURL" placeholder="New URL">
+            </div>
+
+            <div class="col">
+              <button type="submit" class="btn btn-success btn mx-sm-2">Update</button>
+            </div>
 
           </div>
+
         </form>
 
       </div>
       <div class="card-footer">
       </div>
     </div>
-
-
-
-
 
     <!-- Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"

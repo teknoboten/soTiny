@@ -17,86 +17,16 @@ app.use(cookieSession({
   maxAge: 24 * 60 * 60 * 1000
 }));
 
-
 app.set('view engine', 'ejs');
 
 const bcrypt = require('bcryptjs');
 
-const urlDatabase = {
-  // "b2xVn2": {
-  //   longURL: "http://www.lighthouselabs.ca",
-  //   userID: "fe0af0c0"
-  // },
-  // "9sm5xK": {
-  //   longURL: "http://www.google.com",
-  //   userID: "fe0af0c0"
-  // },
-  // "v9xVb4": {
-  //   longURL: "http://bikerave.ca",
-  //   userID: "0323dfb2"
-  // },
-  // "Ssm6xK": {
-  //   longURL: "http://www.tweeter.com",
-  //   userID: "edc0abe0"
-  // }
-};
+//imported helper functions
+const { getUserByEmail, getUserURLs, generateRandomString } = require('./helpers');
 
-const notCrypto = (num) => {
-//takes in a number (num) and returns a random-ish string of num length
-
-  const notSecure = ["a", "b", "c", "d", "e", "f", 0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
-  let randomString = "t";
-
-  for (let i = 0; i < num; i++) {
-    const randomNum = (Math.random() * 10).toFixed(0);
-    randomString += notSecure[randomNum];
-  }
-  return randomString;
-};
-
-const users = {
-//user database
-
-  // edc0abe0: {
-  //   id: 'edc0abe0',
-  //   email: 'Moira@jazzagals.com',
-  //   password: 'ohdannyboy'
-  // },
-  // fe0af0c0: {
-  //   id: 'fe0af0c0',
-  //   email: 'alexis@alittlebit.ca',
-  //   password: 'ewdavid'
-  // },
-  // '0323dfb2': {
-  //   id: '0323dfb2',
-  //   email: 'david@roseapothacary.com',
-  //   password: 'warmestregards'
-  // }
-};
-
-const getUser = (email, users) => {
-//checks if the given (users) object contains given (email)
-  //if true, returns the user
-  //else, returns false
-
-  for (const user in users) {
-    if (email === users[user].email) {
-      return users[user];
-    }
-  }
-  return false;
-};
-
-const getUserURLs = (id, urlDB) => {
-  let result = {};
-
-  for (shortURL in urlDB) {
-    if (urlDB[shortURL].userID === id) {
-      result[shortURL] = urlDB[shortURL];
-    }
-  }
-  return result;
-};
+//fakeDBs
+const urlDatabase = {};
+const users = {};
 
 app.get("/login", (req, res) => {
 
@@ -114,14 +44,20 @@ app.post("/login", (req, res) => {
 //endpoint to handle login requests
 
   const { email, password } = req.body;
-  const user = getUser(email, users);   //returns false if email not found
+  const user = getUserByEmail(email, users);   //returns false if email not found
   
+
   if (!user) {
-    return res.status(403).send("user not found");
+    const message = "User not found. ";
+    const templateVars = { user, message };
+    return res.status(403).render("error", templateVars);
   }
 
   if (!bcrypt.compareSync(password, user.password)) {
-    return res.status(403).send("incorect password");
+
+    const message = "Incorrect Password. ";
+    const templateVars = { user, message };
+    return res.status(403).render("error", templateVars);
   }
   
   req.session.user_id = user.id;
@@ -144,18 +80,25 @@ app.post("/register", (req, res) => {
 //endpoint to handle new registrations
 
   let { email, password } = req.body;
+  let user = undefined;
 
   if (password === "" | email === "") {
-    return res.status(400).send("email or password cannot be blank!");
+
+    const message = "Email or Password cannot be blank.";
+    const templateVars = { user, message };
+    return res.status(403).render("error", templateVars);
   }
   
-  if (getUser(email, users)) {
-    return res.status(400).send("email is already in use");
+  if (getUserByEmail(email, users)) {
+  
+    const message = "That email is already registered.";
+    const templateVars = { user, message };
+    return res.status(403).render("error", templateVars);
   }
 
   //create new user object and save
   password = bcrypt.hashSync(password, 10); //hash password
-  const newUser = { id: notCrypto(8), email, password };
+  const newUser = { id: generateRandomString(8), email, password };
   users[newUser.id] = newUser;
 
   //set cookie and redirect
@@ -167,10 +110,6 @@ app.post("/logout", (req, res) => {
 
   req.session = null;
 
-  res.redirect("/login");
-});
-
-app.get("/", (req, res) => {
   res.redirect("/login");
 });
 
@@ -188,16 +127,6 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
-app.get("/urls/new", (req, res) => {
-
-  if (!req.session.user_id) {
-    return res.redirect(302, "/login");
-  }
-
-  const templateVars = { user: users[req.session['user_id']] };
-  res.render("urls_new", templateVars);
-});
-
 app.post("/urls", (req, res) => {
 //endpoint to handle new so tiny urls
 
@@ -205,17 +134,29 @@ app.post("/urls", (req, res) => {
 
   //if user is not logged in, send an error message
   if (!user) {
-    return res.status(403).send("please log in to continue");
+    const message = "Please log in to continue";
+    return res.status(403).send(message);
   }
   
   //create a new entry in urldatabase
-  const shortURL = notCrypto(6);
-  // const userID = req.session.user_id;
+  const shortURL = generateRandomString(6);
   const userID = user.id;
   const longURL = req.body.longURL;
   urlDatabase[shortURL] = { longURL, userID };
 
   res.redirect(302, `/urls/${shortURL}`); //redirect to show page for new url
+});
+
+app.get("/urls/new", (req, res) => {
+
+  const user = users[req.session['user_id']];
+
+  if (!user) {
+    return res.redirect(302, "/login");
+  }
+
+  const templateVars = { user };
+  res.render("urls_new", templateVars);
 });
 
 app.get("/urls/:shortURL", (req, res) => {
@@ -287,3 +228,6 @@ app.get("/u/:shortURL", (req, res) => {
   res.redirect(302, longURL);
 });
 
+app.get("/", (req, res) => {
+  res.redirect("/login");
+});

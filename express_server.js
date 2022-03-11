@@ -46,7 +46,6 @@ app.post("/login", (req, res) => {
   const { email, password } = req.body;
   const user = getUserByEmail(email, users);   //returns false if email not found
   
-
   if (!user) {
     const message = "User not found. ";
     const templateVars = { user, message };
@@ -132,7 +131,7 @@ app.post("/urls", (req, res) => {
 
   const user = users[req.session['user_id']];
 
-  //if user is not logged in, send an error message
+  //if user is not logged in, send 403 and error message
   if (!user) {
     const message = "Please log in to continue";
     return res.status(403).send(message);
@@ -144,7 +143,8 @@ app.post("/urls", (req, res) => {
   const longURL = req.body.longURL;
   urlDatabase[shortURL] = { longURL, userID };
 
-  res.redirect(302, `/urls/${shortURL}`); //redirect to show page for new url
+  //redirect to show page for new url
+  res.redirect(302, `/urls/${shortURL}`);
 });
 
 app.get("/urls/new", (req, res) => {
@@ -181,17 +181,17 @@ app.post("/urls/:shortURL/edit", (req, res) => {
 //endpoint to handle edit requests
 
   if (!req.session['user_id']) {
-    return res.send("you must be logged in to do that");
+    return res.status(403).send("you must be logged in to do that");
   }
 
   //check if user_id cookie matches the shortURL userID
   if (urlDatabase[req.params.shortURL]['userID'] !== users[req.session['user_id']].id) {
-    return res.send("you do not have permission to do that");
+    return res.status(403).send("you do not have permission to do that");
   }
 
   //if the given shortURL doesn't exist, return an error
   if (!urlDatabase[req.params.shortURL]) {
-    return res.send("invalid soTiny URL");
+    return res.status(404).send("invalid soTiny URL");
   }
 
   //update the longURL and redirect
@@ -203,17 +203,17 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 //endpoint to handle delete requests
 
   if (!req.session['user_id']) {
-    return res.send("you must be logged in to do that");
+    return res.status(403).send("you must be logged in to do that");
   }
 
   //check if user_id cookie matches the given shortURL userID
   if (urlDatabase[req.params.shortURL]['userID'] !== users[req.session['user_id']].id) {
-    return res.send("you do not have permission to do that");
+    return res.status(403).send("you do not have permission to do that");
   }
 
   //if the given shortURL doesn't exist, return an error
   if (!urlDatabase[req.params.shortURL]) {
-    return res.send("invalid soTiny URL");
+    return res.status(404).send("invalid soTiny URL");
   }
 
   delete urlDatabase[req.params.shortURL];

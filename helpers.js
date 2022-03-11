@@ -36,5 +36,4 @@ const generateRandomString = (num) => {
     return randomString;
   };
 
-
   module.exports = { getUserByEmail, getUserURLs, generateRandomString };

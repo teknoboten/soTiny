@@ -1,6 +1,6 @@
 # It's So Tiny!!! 🐇
 
-SoTiny is a "full stack web application" built with Node and Express. Use it to make your URLS sooooo tiny. 
+*It's So Tiny!* is a "full stack web application" built with Node and Express. Use it to make your URLS sooooo tiny. 
 
 ## Final Product
 
@@ -10,13 +10,15 @@ SoTiny is a "full stack web application" built with Node and Express. Use it to 
 
 ## Features
 
+- URL shortening
 - Multi-user authentication
 
 
 ## Upcoming Features 
 
-- Need to add form validation
-- "Click to copy" functionality (automatically copy URL to clipboard on click)
+- Form validation
+- Method Override
+- "Click to copy" (automatically copy URL to clipboard on click)
 
 ## Dependencies
 
@@ -35,4 +37,4 @@ SoTiny is a "full stack web application" built with Node and Express. Use it to 
 
 ## Author
 
-*It's So Tiny!* was written as an assignment for the Lighthouse Labs web dev bootcamp. 
+*It's So Tiny!* was written by Serra Boten as an assignment for the Lighthouse Labs web dev bootcamp. 
